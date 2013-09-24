@@ -1,10 +1,11 @@
+import os
 import sys
-import util
 from subprocess import call
 
 from . import enum
+import ci.jenkins.util as util
 
-Tasks = enum(FILECOPY=1, DIRCOPY=2, FILECREATE=3, DIRCREATE=4, USERCREATE=5, PERMISSION=6)
+TASKS = enum(FILECOPY=1, DIRCOPY=2, FILECREATE=3, DIRCREATE=4, USERCREATE=5, PERMISSION=6)
 
 class TaskException(Exception):
   '''
@@ -19,7 +20,7 @@ class Task():
     * Methods should be overridden.
   '''
   def __init__(self, typeid):
-    self.id = typeid
+    self.typeid = typeid
     self.path = None
 
   def execute(self, **kwargs):
@@ -30,7 +31,7 @@ class Task():
 
 class FileCopyTask(Task):
   def __init__(self):
-    Task.__init__(self, Tasks.FILECOPY)
+    Task.__init__(self, TASKS.FILECOPY)
 
   def execute(self, source, destination):
     try:
@@ -45,7 +46,7 @@ class FileCopyTask(Task):
 
 class DirCopyTask(Task):
   def __init__(self):
-    Task.__init__(self, Tasks.DIRCOPY)
+    Task.__init__(self, TASKS.DIRCOPY)
 
   def execute(self, source, destination):
     try:
@@ -60,7 +61,7 @@ class DirCopyTask(Task):
 
 class DirCreateTask(Task):
   def __init__(self):
-    Task.__init__(self, Tasks.DIRCREATE)
+    Task.__init__(self, TASKS.DIRCREATE)
 
   def execute(self, dirpath):
     try:
@@ -76,7 +77,7 @@ class DirCreateTask(Task):
 
 class CreateUserTask(Task):
   def __init__(self):
-    Task.__init__(self, Task.USERCREATE)
+    Task.__init__(self, TASKS.USERCREATE)
 
   def execute(self, username):
     try:
@@ -87,6 +88,6 @@ class CreateUserTask(Task):
 
   def undo(self):
     if self.path is not None:
-      call(['userdel', '-r', username])
+      call(['userdel', '-r', self.path])
 
 

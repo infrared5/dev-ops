@@ -5,8 +5,8 @@ import shutil
 import socket
 from . import enum
 
-port_re = re.compile('(\d{4})')
-Color = enum(GREEN='\033[92m', WHITE='\033[97m', YELLOW='\033[93m', BLUE='\033[96m', RED='\033[91m')
+PORT_RE = re.compile('(\d{4})')
+COLOR = enum(GREEN='\033[92m', WHITE='\033[97m', YELLOW='\033[93m', BLUE='\033[96m', RED='\033[91m')
 
 def prettyprint(color, message, write=False):
   formatted_msg = '%s%s\033[0m' % (color, message)
@@ -32,7 +32,7 @@ def filename_available(value):
 
 def port_value_valid(value):
   value = value if isinstance(value, str) else str(value)
-  return len(value) == 4 and port_re.match(value)
+  return len(value) == 4 and PORT_RE.match(value)
 
 def port_available(port):
   available = False
@@ -40,7 +40,7 @@ def port_available(port):
     prettyprint(Color.WHITE, 'Checking for available port on 127.0.0.1:%d ...' % port)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     result = sock.connect_ex(('127.0.0.1', port))
-    available = result == 1;
+    available = result == 1
     sock.close()
   except socket.error, e:
     return False

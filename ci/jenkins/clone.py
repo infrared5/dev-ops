@@ -1,13 +1,13 @@
 import os
 import re
 import sys
-import util
 import fileinput
 import traceback
 from subprocess import call
 
-from task import *
-from util import Color
+import ci.jenkins.util as util
+from ci.jenkins.util import COLOR as Color
+from ci.jenkins.task import FileCopyTask, DirCopyTask, DirCreateTask, CreateUserTask
 
 CONFIG_LOCATION = '/etc/default'
 INIT_LOCATION = '/etc/init.d'
@@ -31,7 +31,6 @@ class MasterCloner():
     self.name = name
     self.port = port
     self.tasks = []
-    pass;
 
   def clone(self):
     try:
@@ -128,7 +127,7 @@ class MasterCloner():
     except:
       util.prettyprint(Color.RED, 'Error in cloning for %s:%d. %r' % (self.name, self.port, sys.exc_info()[0]))
       util.prettyprint(Color.GREEN, traceback.print_exc())
-      self.clean();
+      self.clean()
       return False
     return False
 
@@ -184,12 +183,12 @@ class MasterCloner():
     adduser = CreateUserTask()
     self.tasks.append(adduser)
     adduser.execute(self.name)
-    ''' Change permissions on newly created home directory '''
+    # Change permissions on newly created home directory
     call(['chown', '-R', 'jenkins:nogroup', dest_home_location])
     util.prettyprint(Color.WHITE, 'Ownership reassigned successfully.')
 
   def deploy(self):
-    ''' 
+    '''
       Starts new instance of jenkins as daemon
     '''
     util.prettyprint(Color.WHITE, 'Starting %s...' % self.name)
