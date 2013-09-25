@@ -3,13 +3,11 @@ import sys
 from nose.tools import *
 from nose.tools import with_setup
 from ci.jenkins.storage import Storage
-from ci.jenkins.clone import MasterClone
 
 NAME = 'hello'
 PORT = 3001
 PATH = os.path.expanduser('~/.jenkins-clone/clone')
 store = None
-clone = None
 
 def flushwrite(text):
   sys.stdout.write(text + '\n')
@@ -35,14 +33,6 @@ def teardown_store():
   if os.path.exists(PATH):
     os.remove(PATH)
   store = None
-
-def setup_clone():
-  global clone
-  clone = MasterClone(STORE, NAME, PORT)
-
-def teardown_clone():
-  global clone
-  clone = None
 
 @with_setup(setup_store, teardown_store)
 def test_empty_store():
@@ -82,4 +72,3 @@ def test_readin_unstore():
 def test_list_print():
   assert store.list() == NAME, \
     'Expecting list() to be %s.' % NAME
-

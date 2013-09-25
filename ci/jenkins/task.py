@@ -33,9 +33,13 @@ class Task():
 class FileCopyTask(Task):
   def __init__(self):
     Task.__init__(self, TASKS.FILECOPY)
+    self.created_dir = False
 
   def execute(self, source, destination):
     try:
+      if not os.path.exists(os.path.dirname(destination)):
+        os.makedirs(os.path.dirname(destination))
+        self.created_dir = True
       util.copyfile(source, destination)
       self.path = destination
     except:
@@ -43,8 +47,14 @@ class FileCopyTask(Task):
         % (destination, source, sys.exc_info()[0]))
 
   def undo(self):
-    if self.path is not None:
-      util.removefile(self.path)
+    try:
+      if self.path is not None:
+        directory = os.path.dirname(self.path)
+        util.removefile(self.path)
+        if self.created_dir and os.path.exists(directory):
+          util.removedir(directory)
+    except:
+      print 'Could not undo FileCopyTask. %r' % sys.exc_info()[0]
 
 class DirCopyTask(Task):
   def __init__(self):
@@ -59,8 +69,11 @@ class DirCopyTask(Task):
         % (destination, source, sys.exc_info()[0]))
 
   def undo(self):
-    if self.path is not None:
-      util.removedir(self.path)
+    try:
+      if self.path is not None:
+        util.removedir(self.path)
+    except:
+      print 'Could not undo DirCopyTask. %r' % sys.exc_info()[0]
 
 class DirCreateTask(Task):
   def __init__(self):
@@ -76,8 +89,11 @@ class DirCreateTask(Task):
         % (dirpath, sys.exc_info[0]))
 
   def undo(self):
-    if self.path is not None:
-      util.removedir(self.path)
+    try:
+      if self.path is not None:
+        util.removedir(self.path)
+    except:
+      print 'Could not undo DirCreateTask. %r' % sys.exc_info()[0]
 
 class CreateUserTask(Task):
   def __init__(self):
@@ -92,8 +108,11 @@ class CreateUserTask(Task):
         % (username, sys.exc_info[0]))
 
   def undo(self):
-    if self.path is not None:
-      call(['userdel', '-r', self.path])
+    try:
+      if self.path is not None:
+        call(['userdel', '-r', self.path])
+    except:
+      print 'Could not undo CreateUserTask. %r' % sys.exc_info()[0]
 
 FACTORY = {
   TASKS.FILECOPY: FileCopyTask,
@@ -102,6 +121,10 @@ FACTORY = {
   TASKS.USERCREATE: CreateUserTask
 }
 
-def create(task):
-  return FACTORY[task.typeid](task.typeid, task.path) \
-    if task.typeid in FACTORY else None
+def create(plain):
+  for key, value in plain.items():
+    if key == 'typeid' and value in FACTORY:
+      task = FACTORY[value]()
+      task.path = plain['path']
+      return task
+  return None

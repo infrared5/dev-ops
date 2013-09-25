@@ -78,15 +78,15 @@ class MasterClone():
       self.name = raw_input().lower()
       if self.name is not None and self.name is not '':
         self.name = self.ensure_prefix(self.name)
-        if util.filename_available('%s/%s' % (INIT_LOCATION, self.name)):
+        if self.storage.name_exists(self.name):
+          util.prettyprint(Color.YELLOW, '%s is already taken. Please provide another name.\n' % self.name)
+        elif util.filename_available('%s/%s' % (INIT_LOCATION, self.name)):
           util.prettyprint(Color.WHITE, 'Accepting provided name: %s' % self.name)
           return True
         else:
-          util.prettyprint(Color.YELLOW, \
-            '%s is already taken. Please provide another name.\n' % self.name)
+          util.prettyprint(Color.YELLOW, '%s is already taken. Please provide another name.\n' % self.name)
       else:
-        util.prettyprint(Color.YELLOW, \
-          'Please enter a new name for the jenkins clone.\n')
+        util.prettyprint(Color.YELLOW, 'Please enter a new name for the jenkins clone.\n')
 
   def request_port(self):
     '''
@@ -98,6 +98,8 @@ class MasterClone():
         self.port = int(raw_input().lower())
         if not util.port_value_valid(self.port):
           util.prettyprint(Color.YELLOW, 'Please enter a 4-digit integer to use for the port.')
+        elif self.storage.port_exists(self.port):
+          util.prettyprint(Color.YELLOW, '%s is already taken. Please provide another port.' % self.port)
         # elif util.port_available(self.port):
         elif True:
           util.prettyprint(Color.WHITE, 'Accepting provided port: %d' % self.port)
@@ -208,7 +210,9 @@ class MasterClone():
     try:
       call(['sudo', '%s/%s' % (INIT_LOCATION, self.name), 'start'])
       call(['chown', '-R', 'jenkins:adm', '%s/%s' % (RUN_LOCATION, self.name)])
+      task = DirCreateTask()
+      task.path = '%s/%s' % (RUN_LOCATION, self.name)
+      self.tasks.append(task)
     except:
       util.prettyprint(Color.RED, 'Unexpected error in starting daemon: %r' % sys.exc_info()[0])
       raise
-

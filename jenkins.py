@@ -9,6 +9,8 @@
 import os
 import sys
 
+import ci.jenkins.util as util
+from ci.jenkins.util import COLOR as Color
 from ci.jenkins.clone import MasterClone
 from ci.jenkins.storage import Storage
 
@@ -27,8 +29,15 @@ def run_operation(optype):
   ''' Runs associated operation based on provided type. '''
   if optype == 'clone':
     # TODO: Allow for invoke with requested name, port from cli
-    cloner = MasterClone(STORAGE)
-    cloner.clone()
+    clone = MasterClone(STORAGE)
+    clone.clone()
+  elif optype == 'unclone':
+    name = sys.argv[2]
+    clone = MasterClone(STORAGE)
+    clone.restore(STORAGE.get_clone(name))
+    clone.clean()
+  elif optype == 'ls':
+    util.prettyprint(Color.WHITE, STORAGE.list())
 
 if __name__ == '__main__':
   run_operation(sys.argv[1].lower())

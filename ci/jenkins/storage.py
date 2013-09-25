@@ -58,4 +58,4 @@ class Storage():
       for key, value in clone.items():
         if key == 'name':
           listing.append(value)
-    return '\n'.join(name for name in listing)
+    return '\n'.join(name for name in listing) if len(listing) > 0 else '-- none found --'
