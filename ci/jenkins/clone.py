@@ -48,11 +48,17 @@ class MasterClone():
     except KeyboardInterrupt:
       self.clean()
 
+  def serialize(self):
+    return {
+      'name': self.name,
+      'port': self.port,
+      'tasks': [task.serialize() for task in tasks]
+    }
+
   def restore(self, cache):
     self.name = cache.name
     self.port = cache.port
     self.tasks = [task for task in cache.tasks if create(task) is not None]
-    # TODO: restore tasks.
 
   def clean(self):
     '''

@@ -30,6 +30,12 @@ class Task():
   def undo(self):
     raise TaskException('undo() needs to be overridden by Task subclass.')
 
+  def serialize(self):
+    return {
+      'typeid': self.typeid,
+      'port': self.port
+    }
+
 class FileCopyTask(Task):
   def __init__(self):
     Task.__init__(self, TASKS.FILECOPY)
