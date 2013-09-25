@@ -33,7 +33,7 @@ class Task():
   def serialize(self):
     return {
       'typeid': self.typeid,
-      'port': self.port
+      'path': self.path
     }
 
 class FileCopyTask(Task):
