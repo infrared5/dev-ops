@@ -5,7 +5,8 @@ from subprocess import call
 from . import enum
 import ci.jenkins.util as util
 
-TASKS = enum(FILECOPY=1, DIRCOPY=2, FILECREATE=3, DIRCREATE=4, USERCREATE=5, PERMISSION=6)
+TASKS = enum(FILECOPY=1, DIRCOPY=2, FILECREATE=3, \
+  DIRCREATE=4, USERCREATE=5, PERMISSION=6)
 
 class TaskException(Exception):
   '''
@@ -19,9 +20,9 @@ class Task():
     Base Task class.
     * Methods should be overridden.
   '''
-  def __init__(self, typeid):
+  def __init__(self, typeid, path=None):
     self.typeid = typeid
-    self.path = None
+    self.path = path
 
   def execute(self, **kwargs):
     raise TaskException('execute() needs to be overridden by Task subclass.')
@@ -38,7 +39,8 @@ class FileCopyTask(Task):
       util.copyfile(source, destination)
       self.path = destination
     except:
-      raise TaskException('Could not copy file to %s, from source %s. %r' % (destination, source, sys.exc_info()[0]))
+      raise TaskException('Could not copy file to %s, from source %s. %r' \
+        % (destination, source, sys.exc_info()[0]))
 
   def undo(self):
     if self.path is not None:
@@ -53,7 +55,8 @@ class DirCopyTask(Task):
       util.copydir(source, destination)
       self.path = destination
     except:
-      raise TaskException('Could not copy directory to %s, from source %s. %r' % (destination, source, sys.exc_info()[0]))
+      raise TaskException('Could not copy directory to %s, from source %s. %r' \
+        % (destination, source, sys.exc_info()[0]))
 
   def undo(self):
     if self.path is not None:
@@ -69,7 +72,8 @@ class DirCreateTask(Task):
         os.makedirs(dirpath)
       self.path = dirpath
     except:
-      raise TaskException('Could not create directory at %s. %r' % (dirpath, sys.exc_info[0]))
+      raise TaskException('Could not create directory at %s. %r' \
+        % (dirpath, sys.exc_info[0]))
 
   def undo(self):
     if self.path is not None:
@@ -84,10 +88,20 @@ class CreateUserTask(Task):
       call(['useradd', username])
       self.path = username
     except:
-      raise TaskException('Could not create new user %s. %r' % (username, sys.exc_info[0]))
+      raise TaskException('Could not create new user %s. %r' \
+        % (username, sys.exc_info[0]))
 
   def undo(self):
     if self.path is not None:
       call(['userdel', '-r', self.path])
 
+FACTORY = {
+  TASKS.FILECOPY: FileCopyTask,
+  TASKS.DIRCOPY: DirCopyTask,
+  TASKS.DIRCREATE: DirCreateTask,
+  TASKS.USERCREATE: CreateUserTask
+}
 
+def create(task):
+  return FACTORY[task.typeid](task.typeid, task.path) \
+    if task.typeid in FACTORY else None

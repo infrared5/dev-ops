@@ -1,3 +1,6 @@
+[BASIC]
+no-docstring-rgx=.*
+
 [REPORTS]
 reports=no
 

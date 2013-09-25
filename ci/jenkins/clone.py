@@ -7,7 +7,10 @@ from subprocess import call
 
 import ci.jenkins.util as util
 from ci.jenkins.util import COLOR as Color
-from ci.jenkins.task import FileCopyTask, DirCopyTask, DirCreateTask, CreateUserTask
+from ci.jenkins.task import FileCopyTask
+from ci.jenkins.task import DirCopyTask, DirCreateTask
+from ci.jenkins.task import CreateUserTask
+from ci.jenkins.task import create
 
 CONFIG_LOCATION = '/etc/default'
 INIT_LOCATION = '/etc/init.d'
@@ -25,9 +28,10 @@ DEFAULT_PORT = 8080
 # /etc/init.d/$name
 # /etc/default/$name
 
-class MasterCloner():
+class MasterClone():
 
-  def __init__(self, name=DEFAULT_NAME, port=DEFAULT_PORT):
+  def __init__(self, storage, name=DEFAULT_NAME, port=DEFAULT_PORT):
+    self.storage = storage
     self.name = name
     self.port = port
     self.tasks = []
@@ -40,9 +44,15 @@ class MasterCloner():
         self.request_port()
       if self.establish():
         self.deploy()
-      # TODO Save tasks entry into ~/.jenkins-clone
+        self.storage.store(self)
     except KeyboardInterrupt:
       self.clean()
+
+  def restore(self, cache):
+    self.name = cache.name
+    self.port = cache.port
+    self.tasks = [task for task in cache.tasks if create(task) is not None]
+    # TODO: restore tasks.
 
   def clean(self):
     '''
@@ -51,6 +61,7 @@ class MasterCloner():
     for task in self.tasks[:]:
       task.undo()
       self.tasks.remove(task)
+    self.storage.unstore(self.name)
 
   def ensure_prefix(self, value):
     '''
@@ -71,9 +82,11 @@ class MasterCloner():
           util.prettyprint(Color.WHITE, 'Accepting provided name: %s' % self.name)
           return True
         else:
-          util.prettyprint(Color.YELLOW, '%s is already taken. Please provide another name.\n' % self.name)
+          util.prettyprint(Color.YELLOW, \
+            '%s is already taken. Please provide another name.\n' % self.name)
       else:
-        util.prettyprint(Color.YELLOW, 'Please enter a new name for the jenkins clone.\n')
+        util.prettyprint(Color.YELLOW, \
+          'Please enter a new name for the jenkins clone.\n')
 
   def request_port(self):
     '''
@@ -197,4 +210,5 @@ class MasterCloner():
       call(['chown', '-R', 'jenkins:adm', '%s/%s' % (RUN_LOCATION, self.name)])
     except:
       util.prettyprint(Color.RED, 'Unexpected error in starting daemon: %r' % sys.exc_info()[0])
+      raise
 
