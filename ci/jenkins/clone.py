@@ -44,7 +44,7 @@ class MasterClone():
         self.request_port()
       if self.establish():
         self.deploy()
-        self.storage.store(self)
+        self.storage.store(self.serialize())
     except KeyboardInterrupt:
       self.clean()
 
