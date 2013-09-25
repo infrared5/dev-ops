@@ -40,7 +40,8 @@ def port_available(port):
     prettyprint(COLOR.WHITE, 'Checking for available port on 127.0.0.1:%d ...' % port)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     result = sock.connect_ex(('127.0.0.1', port))
-    available = result == 1
+    if result == 1:
+      available = True
     sock.close()
   except socket.error:
     return False

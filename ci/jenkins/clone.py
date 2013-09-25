@@ -107,8 +107,7 @@ class MasterClone():
           util.prettyprint(Color.YELLOW, 'Please enter a 4-digit integer to use for the port.')
         elif self.storage.port_exists(self.port):
           util.prettyprint(Color.YELLOW, '%s is already taken. Please provide another port.' % self.port)
-        # elif util.port_available(self.port):
-        elif True:
+        elif util.port_available(self.port):
           util.prettyprint(Color.WHITE, 'Accepting provided port: %d' % self.port)
           return True
         else:
@@ -220,6 +219,7 @@ class MasterClone():
       task = DirCreateTask()
       task.path = '%s/%s' % (RUN_LOCATION, self.name)
       self.tasks.append(task)
+      # TODO: add task for starting server so as to undo()
     except:
       util.prettyprint(Color.RED, 'Unexpected error in starting daemon: %r' % sys.exc_info()[0])
       raise
