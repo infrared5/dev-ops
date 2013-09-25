@@ -58,7 +58,8 @@ class MasterClone():
   def restore(self, cache):
     self.name = cache['name']
     self.port = cache['port']
-    self.tasks = [task for task in cache['tasks'] if create(task) is not None]
+    self.tasks = [create(task) for task in cache['tasks']]
+    self.tasks = [task for task in self.tasks if task is not None]
 
   def clean(self):
     '''
