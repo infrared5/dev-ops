@@ -161,7 +161,7 @@ FACTORY = {
 
 def create(plain):
   for key, value in plain.items():
-    if key == 'typeid'
+    if key == 'typeid':
       if value in FACTORY:
         task = FACTORY[value]()
         task.path = plain['path']
