@@ -9,7 +9,7 @@ import ci.jenkins.util as util
 from ci.jenkins.util import COLOR as Color
 from ci.jenkins.task import FileCopyTask
 from ci.jenkins.task import DirCopyTask, DirCreateTask
-from ci.jenkins.task import CreateUserTask
+from ci.jenkins.task import CreateUserTask, StartDaemonTask
 from ci.jenkins.task import create
 
 CONFIG_LOCATION = '/etc/default'
@@ -204,7 +204,7 @@ class MasterClone():
     adduser = CreateUserTask()
     self.tasks.append(adduser)
     adduser.execute(self.name)
-    # Change permissions on newly created home directory
+    # Change permissions on newly created home directory.
     call(['chown', '-R', 'jenkins:nogroup', dest_home_location])
     util.prettyprint(Color.WHITE, 'Ownership reassigned successfully.')
 
@@ -214,12 +214,14 @@ class MasterClone():
     '''
     util.prettyprint(Color.WHITE, 'Starting %s...' % self.name)
     try:
-      call(['sudo', '%s/%s' % (INIT_LOCATION, self.name), 'start'])
-      call(['chown', '-R', 'jenkins:adm', '%s/%s' % (RUN_LOCATION, self.name)])
+      start_task = StartDaemonTask()
+      start_task.execute('%s/%s' % (INIT_LOCATION, self.name))
+      # File is generated on start of daemon. Change ownership.
       task = DirCreateTask()
       task.path = '%s/%s' % (RUN_LOCATION, self.name)
+      call(['chown', '-R', 'jenkins:adm', '%s/%s' % (RUN_LOCATION, self.name)])
+      self.tasks.insert(0, start_task)
       self.tasks.append(task)
-      # TODO: add task for starting server so as to undo()
     except:
       util.prettyprint(Color.RED, 'Unexpected error in starting daemon: %r' % sys.exc_info()[0])
       raise
