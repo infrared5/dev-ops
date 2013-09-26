@@ -104,7 +104,7 @@ class MasterClone():
       try:
         self.port = int(raw_input().lower())
         if not util.port_value_valid(self.port):
-          util.prettyprint(Color.YELLOW, 'Please enter a 4-digit integer to use for the port.')
+          util.prettyprint(Color.YELLOW, 'Please enter an integer between 1024 and 65535 to use for the port.')
         elif self.storage.port_exists(self.port):
           util.prettyprint(Color.YELLOW, '%s is already taken. Please provide another port.' % self.port)
         elif util.port_available(self.port):

@@ -37,12 +37,11 @@ def port_value_valid(value):
 def port_available(port):
   available = False
   try:
-    prettyprint(COLOR.WHITE, 'Checking for available port on 184.106.134.58:%d ...' % port)
+    prettyprint(COLOR.WHITE, 'Checking for available port on 127.0.0.1:%d ...' % port)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    result = sock.connect_ex(('184.106.134.58', port))
-    if result == 1:
-      available = True
+    sock.connect(('127.0.0.1', port))
     sock.close()
+    return True
   except socket.error:
     return False
   return available
