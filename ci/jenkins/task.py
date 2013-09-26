@@ -138,8 +138,8 @@ class StartDaemonTask(Task):
   def execute(self, path):
     try:
       # util.prettyprint(Color.WHITE, 'Starting daemon at %s.' % path)
-      call(['sudo', path, 'start'])
       self.path = path
+      call(['sudo', path, 'start'])
     except:
       print 'Could not start daemon at %s. %r' % (path, sys.exc_info()[0])
 
