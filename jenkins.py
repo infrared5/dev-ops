@@ -5,39 +5,43 @@
   ---
     clone: clones default jenkins setup based on provided name and port
 '''
-#!/usr/bin/env python
+#!/usr/bin/python
 import os
 import sys
+import argparse
 
 import ci.jenkins.util as util
+import ci.jenkins.clone as clone
 from ci.jenkins.util import COLOR as Color
 from ci.jenkins.clone import MasterClone
 from ci.jenkins.storage import Storage
 
 STORAGE = Storage(os.path.expanduser('~/.jenkins-clone/clones'))
 
-# TODO: define clone operation
+class Unpack(object):
+  pass
 
-# TODO: define unclone operation
-# clone = MasterClone(STORAGE)
-# clone.restore(STORAGE.get_clone(name))
-# clone.clean()
+parser = argparse.ArgumentParser(description='Utility to clone and unclone Jenkins instance.')
+parser.add_argument('operation', choices=['clone', 'unclone', 'ls'], \
+  help='Define the operation.')
+parser.add_argument('--name', default=clone.DEFAULT_NAME, type=str, \
+  help='Define a name when using operation clone or unclone.')
+parser.add_argument('--port', default=clone.DEFAULT_PORT, type=int, \
+  help='Optional port when using operation unclone.')
 
-# TODO: define ls operation (list previous clones created using -clone)
-
-def run_operation(optype):
+def run_operation(operation, name, port):
   ''' Runs associated operation based on provided type. '''
-  if optype == 'clone':
-    # TODO: Allow for invoke with requested name, port from cli
-    clone = MasterClone(STORAGE)
+  if operation == 'clone':
+    clone = MasterClone(STORAGE, name, port)
     clone.clone()
-  elif optype == 'unclone':
-    name = sys.argv[2]
+  elif operation == 'unclone':
     clone = MasterClone(STORAGE)
     clone.restore(STORAGE.get_clone(name))
     clone.clean()
-  elif optype == 'ls':
+  elif operation == 'ls':
     util.prettyprint(Color.WHITE, STORAGE.list())
 
 if __name__ == '__main__':
-  run_operation(sys.argv[1].lower())
+  unpack = Unpack()
+  args = parser.parse_args(namespace=unpack)
+  run_operation(unpack.operation, unpack.name, unpack.port)
