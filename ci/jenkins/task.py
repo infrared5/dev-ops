@@ -58,7 +58,7 @@ class FileCopyTask(Task):
   def undo(self):
     try:
       if self.path is not None:
-        util.prettyprint(Color.WHITE, 'Removing %s...', self.path)
+        util.prettyprint(Color.WHITE, 'Removing %s...' % self.path)
         directory = os.path.dirname(self.path)
         util.removefile(self.path)
         if self.created_dir and os.path.exists(directory):
@@ -155,7 +155,8 @@ FACTORY = {
   TASKS.FILECOPY: FileCopyTask,
   TASKS.DIRCOPY: DirCopyTask,
   TASKS.DIRCREATE: DirCreateTask,
-  TASKS.USERCREATE: CreateUserTask
+  TASKS.USERCREATE: CreateUserTask,
+  TASKS.DAEMON: StartDaemonTask
 }
 
 def create(plain):
