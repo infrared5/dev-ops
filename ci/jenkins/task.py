@@ -161,8 +161,11 @@ FACTORY = {
 
 def create(plain):
   for key, value in plain.items():
-    if key == 'typeid' and value in FACTORY:
-      task = FACTORY[value]()
-      task.path = plain['path']
-      return task
+    if key == 'typeid'
+      if value in FACTORY:
+        task = FACTORY[value]()
+        task.path = plain['path']
+        return task
+      else:
+        util.prettyprint(Color.YELLOW, 'Could not find task with typeid: %d' % value)
   return None

@@ -10,7 +10,6 @@ class Storage():
 
   def get_clone(self, name):
     for clone in self.cache:
-      sys.stdout.write('clone: %r' % clone)
       for key, value in clone.items():
         if key == 'name' and value == name:
           return clone
