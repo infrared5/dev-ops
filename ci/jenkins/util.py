@@ -41,7 +41,6 @@ def port_available(port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(('127.0.0.1', port))
     sock.close()
-    return True
   except socket.error:
-    return False
+    available = True
   return available

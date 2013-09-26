@@ -5,7 +5,7 @@
   ---
     clone: clones default jenkins setup based on provided name and port
 '''
-#!/usr/bin/python
+#!/usr/bin/env python
 import os
 import sys
 
