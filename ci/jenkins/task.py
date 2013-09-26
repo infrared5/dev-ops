@@ -138,15 +138,16 @@ class StartDaemonTask(Task):
   def execute(self, path):
     try:
       # util.prettyprint(Color.WHITE, 'Starting daemon at %s.' % path)
-      self.path = path
       call(['sudo', path, 'start'])
+      self.path = path
     except:
       print 'Could not start daemon at %s. %r' % (path, sys.exc_info()[0])
 
   def undo(self):
     try:
-      util.prettyprint(Color.WHITE, 'Stopping daemon at %s.' % path)
-      call(['sudo', self.path, 'stop'])
+      if self.path is not None:
+        util.prettyprint(Color.WHITE, 'Stopping daemon at %s.' % self.path)
+        call(['sudo', self.path, 'stop'])
     except:
       print 'Could not stop daemon at %s. %r' % (self.path, sys.exc_info()[0])
 
