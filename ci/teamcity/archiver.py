@@ -1,23 +1,35 @@
 import os
 import sys
 import shutil
+import zipfile
 import traceback
 
 class Archiver():
   def __init__(self, base):
     self.base = base
 
-  def zipdir(self, basedir, dest):
-    print 'zip to: %s' % basedir
-    for root, dirs, files in os.walk(basedir):
-      for f in files:
-        dest.write(os.path.join(root, f))
-    print 'done.'
-
   def archive(self, name):
     try:
-      print 'running zip!'
-      shutil.make_archive(os.path.join(self.base, name), format="zip", root_dir=self.base)
-      print 'zip run %s' % self.base
+      location = os.path.join(self.base, name)
+      shutil.make_archive(location, format="zip", root_dir=self.base)
+      shutil.rmtree(location)
+    except:
+      traceback.print_exc(file=sys.stdout)
+
+  def unarchive(self, dest_dir, zipname):
+    try:
+      # http://stackoverflow.com/questions/12886768/simple-way-to-unzip-file-in-python-on-all-oses
+      with zipfile.ZipFile(zipname) as zf:
+        for member in zf.infolist():
+          # Path traversal defense copied from
+          # http://hg.python.org/cpython/file/tip/Lib/http/server.py#l789
+          words = member.filename.split('/')
+          path = dest_dir
+          for word in words[:-1]:
+            drive, word = os.path.splitdrive(word)
+            head, word = os.path.split(word)
+            if word in (os.curdir, os.pardir, ''): continue
+            path = os.path.join(path, word)
+          zf.extract(member, path)
     except:
       traceback.print_exc(file=sys.stdout)
