@@ -3,17 +3,10 @@ import re
 import sys
 import shutil
 import socket
-from . import enum
+from ci import enum
+from .. import prettyprint, COLOR
 
 PORT_RE = re.compile('(\d{4,5})')
-COLOR = enum(GREEN='\033[92m', WHITE='\033[97m', YELLOW='\033[93m', BLUE='\033[96m', RED='\033[91m')
-
-def prettyprint(color, message, write=False):
-  formatted_msg = '%s%s\033[0m' % (color, message)
-  if write:
-    sys.stdout.write(formatted_msg)
-  else:
-    print formatted_msg
 
 def copyfile(src, dest):
   shutil.copyfile(src, dest)

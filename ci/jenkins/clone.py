@@ -5,8 +5,7 @@ import fileinput
 import traceback
 from subprocess import call
 
-import ci.jenkins.util as util
-from ci.jenkins.util import COLOR as Color
+from ci import prettyprint, COLOR as Color
 from ci.jenkins.task import FileCopyTask
 from ci.jenkins.task import DirCopyTask, DirCreateTask
 from ci.jenkins.task import CreateUserTask, StartDaemonTask
@@ -81,39 +80,39 @@ class MasterClone():
       Prompt for unique identifier name of new jenkins instance.
     '''
     while True:
-      util.prettyprint(Color.BLUE, 'Enter name: ', write=True)
+      prettyprint(Color.BLUE, 'Enter name: ', write=True)
       self.name = raw_input().lower()
       if self.name is not None and self.name is not '':
         self.name = self.ensure_prefix(self.name)
         if self.storage.name_exists(self.name):
-          util.prettyprint(Color.YELLOW, '%s is already taken. Please provide another name.\n' % self.name)
+          prettyprint(Color.YELLOW, '%s is already taken. Please provide another name.\n' % self.name)
         elif util.filename_available('%s/%s' % (INIT_LOCATION, self.name)):
-          util.prettyprint(Color.WHITE, 'Accepting provided name: %s' % self.name)
+          prettyprint(Color.WHITE, 'Accepting provided name: %s' % self.name)
           return True
         else:
-          util.prettyprint(Color.YELLOW, '%s is already taken. Please provide another name.\n' % self.name)
+          prettyprint(Color.YELLOW, '%s is already taken. Please provide another name.\n' % self.name)
       else:
-        util.prettyprint(Color.YELLOW, 'Please enter a new name for the jenkins clone.\n')
+        prettyprint(Color.YELLOW, 'Please enter a new name for the jenkins clone.\n')
 
   def request_port(self):
     '''
       Prompt for specific port to use.
     '''
     while True:
-      util.prettyprint(Color.BLUE, 'Enter port to use: ', write=True)
+      prettyprint(Color.BLUE, 'Enter port to use: ', write=True)
       try:
         self.port = int(raw_input().lower())
         if not util.port_value_valid(self.port):
-          util.prettyprint(Color.YELLOW, 'Please enter an integer between 1024 and 65535 to use for the port.')
+          prettyprint(Color.YELLOW, 'Please enter an integer between 1024 and 65535 to use for the port.')
         elif self.storage.port_exists(self.port):
-          util.prettyprint(Color.YELLOW, '%s is already taken. Please provide another port.' % self.port)
+          prettyprint(Color.YELLOW, '%s is already taken. Please provide another port.' % self.port)
         elif util.port_available(self.port):
-          util.prettyprint(Color.WHITE, 'Accepting provided port: %d' % self.port)
+          prettyprint(Color.WHITE, 'Accepting provided port: %d' % self.port)
           return True
         else:
-          util.prettyprint(Color.YELLOW, '%s is already taken. Please provide another port.' % self.port)
+          prettyprint(Color.YELLOW, '%s is already taken. Please provide another port.' % self.port)
       except:
-        util.prettyprint(Color.YELLOW, 'Please enter a valid port number for the jenkins clone to run on.')
+        prettyprint(Color.YELLOW, 'Please enter a valid port number for the jenkins clone to run on.')
 
   def replace_pid_reference(self, line):
     ''' Returns modified line with new pid reference. '''
@@ -146,8 +145,8 @@ class MasterClone():
       self.copy_config()
       return True
     except:
-      util.prettyprint(Color.RED, 'Error in cloning for %s:%d. %r' % (self.name, self.port, sys.exc_info()[0]))
-      util.prettyprint(Color.GREEN, traceback.print_exc())
+      prettyprint(Color.RED, 'Error in cloning for %s:%d. %r' % (self.name, self.port, sys.exc_info()[0]))
+      prettyprint(Color.GREEN, traceback.print_exc())
       self.clean()
       return False
     return False
@@ -177,7 +176,7 @@ class MasterClone():
     task = FileCopyTask()
     self.tasks.append(task)
     task.execute(src, dest)
-    util.prettyprint(Color.WHITE, 'Preparing configuration for %s on port %d.' % (self.name, self.port))
+    prettyprint(Color.WHITE, 'Preparing configuration for %s on port %d.' % (self.name, self.port))
     for line in fileinput.input(os.path.abspath(dest), inplace=True):
       if re.search('^NAME=', line) is not None:
         line = 'NAME=%s' % self.name
@@ -200,19 +199,19 @@ class MasterClone():
       elif re.search('^HTTP_PORT', line) is not None:
         line = 'HTTP_PORT=%s' % str(self.port)
       sys.stdout.write(line)
-    util.prettyprint(Color.WHITE, 'Reassigning ownership on %s...' % dest_home_location)
+    prettyprint(Color.WHITE, 'Reassigning ownership on %s...' % dest_home_location)
     adduser = CreateUserTask()
     self.tasks.append(adduser)
     adduser.execute(self.name)
     # Change permissions on newly created home directory.
     call(['chown', '-R', 'jenkins:nogroup', dest_home_location])
-    util.prettyprint(Color.WHITE, 'Ownership reassigned successfully.')
+    prettyprint(Color.WHITE, 'Ownership reassigned successfully.')
 
   def deploy(self):
     '''
       Starts new instance of jenkins as daemon
     '''
-    util.prettyprint(Color.WHITE, 'Starting %s...' % self.name)
+    prettyprint(Color.WHITE, 'Starting %s...' % self.name)
     try:
       start_task = StartDaemonTask()
       start_task.execute('%s/%s' % (INIT_LOCATION, self.name))
@@ -223,5 +222,5 @@ class MasterClone():
       self.tasks.insert(0, start_task)
       self.tasks.append(task)
     except:
-      util.prettyprint(Color.RED, 'Unexpected error in starting daemon: %r' % sys.exc_info()[0])
+      prettyprint(Color.RED, 'Unexpected error in starting daemon: %r' % sys.exc_info()[0])
       raise
