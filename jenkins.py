@@ -3,7 +3,9 @@
   ---
   Available commands
   ---
-    clone: clones default jenkins setup based on provided name and port
+    clone: clones default jenkins setup based on provided name and port.
+    unclone: removes any resources previously created through the clone operation.
+    ls: lists any previously cloned jenkins instances run through this utility.
 '''
 #!/usr/bin/python
 import os

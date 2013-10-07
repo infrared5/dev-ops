@@ -31,5 +31,5 @@ def teardown_archiver():
 
 @with_setup(setup_archiver, teardown_archiver)
 def test_unarchive():
-  archiver.unarchive(PROJECT_DIR, ZIP_PATH)
+  archiver.unarchive(PROJECT_NAME)
   assert os.path.exists(DEST_PATH), 'Expected %s to exist on unarchive.' % DEST_PATH
