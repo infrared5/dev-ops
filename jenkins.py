@@ -24,9 +24,9 @@ class Unpack(object):
 parser = argparse.ArgumentParser(description='Utility to clone and unclone Jenkins instance.')
 parser.add_argument('operation', choices=['clone', 'unclone', 'ls'], \
   help='Define the operation.')
-parser.add_argument('--name', default=clone.DEFAULT_NAME, type=str, \
+parser.add_argument('-n', '--name', default=clone.DEFAULT_NAME, type=str, \
   help='Define a name when using operation clone or unclone.')
-parser.add_argument('--port', default=clone.DEFAULT_PORT, type=int, \
+parser.add_argument('-p', '--port', default=clone.DEFAULT_PORT, type=int, \
   help='Optional port when using operation unclone.')
 
 def run_operation(operation, name, port):
