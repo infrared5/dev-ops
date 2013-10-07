@@ -18,6 +18,7 @@ class Archiver():
 
   def unarchive(self, dest_dir, zipname):
     try:
+      # Unarchive for 2.7 copied from
       # http://stackoverflow.com/questions/12886768/simple-way-to-unzip-file-in-python-on-all-oses
       with zipfile.ZipFile(zipname) as zf:
         for member in zf.infolist():
