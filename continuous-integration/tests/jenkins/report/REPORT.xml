@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?><testsuite name="nosetests" tests="15" errors="0" failures="0" skip="0"><testcase classname="clone_store_test" name="test_empty_store" time="0.000"></testcase><testcase classname="clone_store_test" name="test_store_with_clone" time="0.001"></testcase><testcase classname="clone_store_test" name="test_clone_access" time="0.000"></testcase><testcase classname="clone_store_test" name="test_readin_clone_access" time="0.001"></testcase><testcase classname="clone_store_test" name="test_unstore" time="0.000"></testcase><testcase classname="clone_store_test" name="test_readin_unstore" time="0.001"></testcase><testcase classname="clone_store_test" name="test_list_print" time="0.000"></testcase><testcase classname="create_task_test" name="test_task_create" time="0.000"></testcase><testcase classname="create_task_test" name="test_task_properties" time="0.000"></testcase><testcase classname="tasks_test" name="test_filecopy_execute" time="0.001"><system-out><![CDATA[?[97mRemoving ./fixtures/temp/jenkins...?[0m
+]]></system-out></testcase><testcase classname="tasks_test" name="test_filecopy_undo" time="0.000"><system-out><![CDATA[?[97mRemoving ./fixtures/temp/jenkins...?[0m
+?[97mRemoving ./fixtures/temp/jenkins...?[0m
+Could not undo FileCopyTask. <type 'exceptions.OSError'>
+]]></system-out></testcase><testcase classname="tasks_test" name="test_dircreate_execute" time="0.000"><system-out><![CDATA[?[97mRemoving ./fixtures/temp?[0m
+]]></system-out></testcase><testcase classname="tasks_test" name="test_dircreate_undo" time="0.000"><system-out><![CDATA[?[97mRemoving ./fixtures/temp?[0m
+?[97mRemoving ./fixtures/temp?[0m
+Could not undo DirCreateTask. <type 'exceptions.OSError'>
+]]></system-out></testcase><testcase classname="tasks_test" name="test_dircopy_execute" time="0.001"><system-out><![CDATA[?[97mRemoving ./fixtures/temp?[0m
+]]></system-out></testcase><testcase classname="tasks_test" name="test_dircopy_undo" time="0.000"><system-out><![CDATA[?[97mRemoving ./fixtures/temp?[0m
+?[97mRemoving ./fixtures/temp?[0m
+Could not undo DirCopyTask. <type 'exceptions.OSError'>
+]]></system-out></testcase></testsuite>
