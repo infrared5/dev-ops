@@ -1,4 +1,3 @@
-
 try:
     from setuptools import setup
 except ImportError:
@@ -12,7 +11,7 @@ config = {
     'author_email': 'todd@infrared5.com',
     'version': '0.1.0',
     'install_requires': ['nose', 'lettuce', 'pylint'],
-    'packages': ['ci.jenkins'],
+    'packages': ['ci.jenkins', 'ci.teamcity'],
     'scripts': [],
     'name': 'dev-ops'
 }
